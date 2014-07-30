@@ -54,14 +54,12 @@
         </reference>
     </amazereviews_index_index>
     <catalog_product_view translate="label">
-       <!--- PATCH as commented out by Apptha support --- 
-	   <reference name="content">  
-            <block type="Apptha_Amazereviews_Block_Reviewdetails_Averagerating" name="amazereviews.reviewdetails.averagerating" as="amazereviews.reviewdetails.averagerating" after="-" template="amazereviews/reviewdetails/averagerating.phtml" >
-                <block type="page/html_pager" name="product_review_list.toolbar" />   
-                <block type="amazereviews/mostacceptedreviews" name="mostacceptedreviews" template="amazereviews/mostacceptedreviews.phtml" />            
-            </block>    
-        </reference>
-		--->
+<!--         <reference name="content">   -->
+<!--             <block type="Apptha_Amazereviews_Block_Reviewdetails_Averagerating" name="amazereviews.reviewdetails.averagerating" as="amazereviews.reviewdetails.averagerating" after="-" template="amazereviews/reviewdetails/averagerating.phtml" > -->
+<!--                 <block type="page/html_pager" name="product_review_list.toolbar" />    -->
+<!--                 <block type="amazereviews/mostacceptedreviews" name="mostacceptedreviews" template="amazereviews/mostacceptedreviews.phtml" />             -->
+<!--             </block>     -->
+<!--         </reference> -->
         <reference name="right">
             <block type="amazereviews/sidebar" name="amazereviews_sidebarright" >
                 <action method="setTemplate" ifconfig="amazereviews_section/sidebar/enable_right">
