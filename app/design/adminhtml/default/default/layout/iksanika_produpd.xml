@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addJs">
+                <script>Iksanika/productupdater/jquery-1.9.1.min.js</script>
+            </action>
+            <action method="addJs">
+                <script>Iksanika/productupdater/productupdater.js</script>
+            </action>
+            <action method="addJs">
+                <script>Iksanika/productupdater/productgrid.js</script>
+            </action> 
+            <action method="addJs">
+                <script>Iksanika/productupdater/dragtable.js</script>
+            </action> 
+            
+            <action method="addJs">
+                <script>Iksanika/productupdater/egsupplemental.js</script>
+            </action>
+            <action method="addItem">
+                <type>js_css</type>
+                <name>Iksanika/productupdater/resources/css/productupdater.css</name>
+            </action>
+        </reference> 
+    </default>
+</layout>   
