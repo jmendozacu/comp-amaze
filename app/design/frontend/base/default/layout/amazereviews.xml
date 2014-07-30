@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Amazereviews
+ * @version     0.2.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ **/
+ -->
+<layout version="0.1.0">
+    <default>
+        <reference name="head">
+            <action method="addCss">
+                <stylesheet>apptha-reviews/css/amazereviews.css</stylesheet>
+            </action>
+            <action method="addJs">
+                <script>amazereviews/jquery-1.9.0.js</script>
+            </action>
+            <action method="addJs">
+                <script>amazereviews/noconflictjquery.js</script>
+            </action>   
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-right.phtml</template>
+            </action>
+        </reference>
+    </default>
+    <amazereviews_index_index>
+        <reference name="content">                     
+            <block type="page/html_pager" name="product_review_list.toolbar" />        
+            <block type="amazereviews/amazereviews" name="amazereviews" template="amazereviews/amazereviews.phtml" />
+        </reference>
+    </amazereviews_index_index>
+    <catalog_product_view translate="label">
+       <!--- PATCH as commented out by Apptha support --- 
+	   <reference name="content">  
+            <block type="Apptha_Amazereviews_Block_Reviewdetails_Averagerating" name="amazereviews.reviewdetails.averagerating" as="amazereviews.reviewdetails.averagerating" after="-" template="amazereviews/reviewdetails/averagerating.phtml" >
+                <block type="page/html_pager" name="product_review_list.toolbar" />   
+                <block type="amazereviews/mostacceptedreviews" name="mostacceptedreviews" template="amazereviews/mostacceptedreviews.phtml" />            
+            </block>    
+        </reference>
+		--->
+        <reference name="right">
+            <block type="amazereviews/sidebar" name="amazereviews_sidebarright" >
+                <action method="setTemplate" ifconfig="amazereviews_section/sidebar/enable_right">
+                    <template>amazereviews/sidebar.phtml</template>
+                </action>
+            </block>
+        </reference>
+        <reference name="left">
+            <block type="amazereviews/sidebar" name="amazereviews_sidebarleft" >
+                <action method="setTemplate" ifconfig="amazereviews_section/sidebar/enable_left">
+                    <template>amazereviews/sidebar.phtml</template>
+                </action>
+            </block>
+        </reference>
+    </catalog_product_view>
+    <amazereviews_index_view>
+        <reference name="content">           
+            <block type="amazereviews/list" name="reviewdetailslist" template="amazereviews/list.phtml" />             
+        </reference> 
+    </amazereviews_index_view>  
+</layout>

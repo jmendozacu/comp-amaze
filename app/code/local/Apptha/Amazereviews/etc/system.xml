@@ -1,0 +1,292 @@
+<?xml version="1.0" ?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Amazereviews
+ * @version     0.2.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ **/
+ -->
+<config>
+    <tabs>
+        <Apptha module="amazereviews" translate="label">
+            <label>Apptha</label>
+            <sort_order>100</sort_order>
+        </Apptha>
+    </tabs>
+    <sections>
+        <amazereviews_section module="amazereviews" translate="label">
+            <label>Amaze Reviews and Ratings</label>
+            <sort_order>200</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <tab>Apptha</tab>
+           <groups>
+		<module_config translate="label">
+                    <label>Module Configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                <fields>
+                        <enabled translate="label">
+                            <label>Enable</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        </fields>
+                </module_config>
+            </groups>
+               <groups>                
+                    <licensekey_config translate="label">
+                    <label>License Key Configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>                                        
+                    <fields>                        
+                        <Apply_apptha_licensekey translate="label">
+                        <label>Apply License Key</label>
+                        <frontend_type>text</frontend_type>
+                        <sort_order>0</sort_order>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>
+                        </Apply_apptha_licensekey>                                                
+                     </fields>                     
+                </licensekey_config>					
+            </groups>                       
+            <groups>     
+                <facebook_config translate="label">
+                    <label>Facebook API</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>                    
+                    <fields>
+                        <enabled_facebook translate="label">
+                            <label>Enable</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_facebook>
+                        <facebook_appkey translate="label tooltip comment">
+                            <label>Facebook App Id</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>260</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Please Enter  <![CDATA[<a href="https://developers.facebook.com/apps" target="_blank">facebook app id</a>]]> </comment>
+                        </facebook_appkey>
+                        <facebook_secretkey translate="label tooltip comment">
+                            <label>Facebook Secret Key</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-alphanum</validate>
+                            <sort_order>270</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                             <comment>Please Enter <![CDATA[<a href="https://developers.facebook.com/apps" target="_blank">facebook app secret key</a>]]></comment>
+                        </facebook_secretkey>                        
+                     </fields>
+                </facebook_config>
+            </groups>           
+                   <groups>
+                <google_config translate="label">
+                    <label>Google API</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>                  
+                        <fields>
+                        <enabled_gplus translate="label">
+                            <label>Enable</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_gplus>                   
+                    </fields>
+                </google_config>
+            </groups>            
+  <groups>
+      <sidebar translate="label">
+                    <label>Recent Reviews Sideblock</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>50</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Enable</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                             <comment><![CDATA[To enable Recent Reviews Sideblock.]]></comment>
+                        </active>
+                        <count translate="label">
+                            <label>Reviews Count</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Set to zero to show all reviews.]]></comment>
+                        </count>
+                        <max_words translate="label">
+                            <label>Review Words Count</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Set to zero to show full review text.]]></comment>
+                        </max_words>
+                        <title_words translate="label">
+                            <label>Review Title Words Count</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Set to zero to show full review title text.]]></comment>
+                        </title_words>
+                        <enable_left translate="label">
+                            <label>Display Sideblock in Left </label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Select 'Yes' to display Recent Reviews Sideblock in left</comment>
+			</enable_left>
+			<enable_right translate="label">
+                            <label>Display Sideblock in Right</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Selet 'Yes' to display Recent Reviews Sideblock in right</comment>
+			</enable_right>
+                     </fields>
+                </sidebar>
+              </groups>             
+               <groups>
+               <deletereviews translate="label">
+                    <label>Delete Reviews</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>60</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Allow reviewer to Delete his/her own review</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </active>                                            
+                     </fields>
+                </deletereviews>                
+              </groups>
+            <groups>
+               <autodelete_abusedreviews translate="label">
+                    <label>Autodelete Abusedreviews</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Enable</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </active>                         
+                         <count translate="label">
+                            <label>Abusedreviews count</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Set to zero to show all reviews.]]></comment>
+                        </count>                                          
+                     </fields>
+                </autodelete_abusedreviews>                
+              </groups>            
+              <groups>
+                     <rating translate="label">
+                    <label>Rating Bar Color</label>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>                      
+                        <label_color translate="label">
+                            <label>Select Rating Bar Color</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>color</validate>
+                           <comment><![CDATA[Pick color for rating bar. ]]></comment>
+                        </label_color>                                                               
+                    </fields>
+                </rating>
+                  </groups>       
+        </amazereviews_section>
+    </sections>
+</config>

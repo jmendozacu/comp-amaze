@@ -1,0 +1,245 @@
+
+<?php
+
+
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Amazereviews
+ * @version     0.2.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ **/
+
+
+// CHECKING WHETHER MODULE ENABLED OR NOT
+
+if(Mage::getStoreConfig('amazereviews_section/module_config/enabled')==1)
+{
+
+	// CHECKING WHETHER SIDEBAR ENABLED OR NOT
+
+	if(Mage::getStoreConfig('amazereviews_section/sidebar/active')==1)
+	{
+		// GETTING NO OF REVIEWS
+
+		$count = Mage::getStoreConfig('amazereviews_section/sidebar/count');
+
+		// GETTING REVIEWS DETAIL
+	
+	 $_items  =  $this->getSidebarReviews($count);
+	 ?>
+<div
+	class=" block box-collateral box-reviews" id="customer-reviews">
+
+	<div class="block-title review-header">
+		<strong><span><?php echo $this->__("Recent Reviews") ?> </span> </strong>
+	</div>
+	<?php
+
+	// ASSIGNING VARIABLE $zigzag FOR CSS STYLE
+
+	$zigzag=0;
+
+	// CHECKING WHETHER REVIEWS EXIST OR NOT
+
+	if( count($_items)):
+	?>
+	<div class="block-content">
+		<ul>
+		<?php foreach ($_items as $_review):
+			
+		// CALCULATE ODD OR EVEN
+		if($zigzag%2==0)
+		{
+			$evenodd="even";
+		}
+		else{
+			$evenodd="odd";
+		}
+		$zigzag++;
+
+		?>
+			<li class="reivew-container <?php echo $evenodd;?>">
+				<div class="reivew-header group">
+					<p class="block-subtitle">
+					<?php
+
+					// DISPLAYING REVIEW TITLE, NICKNAME & CREATED DATE
+
+
+					// GETTING WORD COUNT TO DISPLAY REVIEW TITLE
+
+				$max = Mage::getStoreConfig('amazereviews_section/sidebar/title_words');
+						
+				// TRIM WORD COUNT
+
+				$review_title=$this->trimTitle($_review->getTitle());
+				
+				$titleCount=$_review->getTitle();
+				$wordsCount=str_word_count($titleCount);
+				
+				if($wordsCount>$max)
+				{
+				  echo nl2br($this->htmlEscape($review_title).' ...');
+				}
+				else
+				{
+				  
+				
+				 echo nl2br($this->htmlEscape($review_title));
+				}
+                                        ?>
+					</p>
+							<div class="review-details group">
+						<div class="fleft">
+							<h5 class="nickName">
+							<?php echo $this->__('%s', $this->htmlEscape($_review->getNickname())) ?>
+							</h5>
+							<h6 class="date">
+							<?php echo $this->__('%s', $this->formatDate($_review->getCreatedAt()), 'long') ?>
+							</h6>
+						</div>
+
+
+                                            	<?php
+
+						// CALCULATE AVERAGE RATING & DISPLAY IT
+
+						$_votes = $_review->getRatingVotes();
+						if (count($_votes)){
+							$rating_sum = 0;
+							foreach ($_votes as $_vote)
+							{
+								$rating_sum = $rating_sum + (int) $_vote->getPercent();
+							}
+						}
+						$rating_avg=ceil($rating_sum/count($_votes));
+						?>
+
+                                            <?php
+
+                                            // CHECKING WHETHER RATING OPTIONS EXIST OR NOT
+
+                                            if(count($_votes)): ?>
+
+						<div class="rating-box fright">
+					
+							<div class="rating" style="width:<?php echo $rating_avg; ?>%"></div>
+						</div>
+                                           <?php endif; ?>
+
+                                       
+					</div>
+				</div> <?php
+
+				// GETTING WORD COUNT FOR DISPLAY REVIEW DETAILS
+
+				$max = Mage::getStoreConfig('amazereviews/sidebar/max_words');
+
+				// TRIM WORD COUNT
+
+				$review_content=$this->trim($_review->getDetail());
+                                	// GET FULL REVIEW DETAILS
+				$str=$_review->getDetail();
+				//TAKE COUNT FOR THAT REVIEW DETAIL
+				$wordsCount=str_word_count($str);
+				?>
+				<p class="empty">
+
+
+				<?php
+				//CHECKING CONDITION TO DISPLAY ..... AT THE END OF REVIEW
+				if($wordsCount>$max)
+				{
+				  echo nl2br($this->htmlEscape($review_content).' ...');
+				}
+				else
+				{
+				  echo nl2br($this->htmlEscape($review_content));
+				}
+				?>
+				</p>
+				<div class="socialshare-useful-yesno empty group">
+					<span class="socialshare dblcok fleft"> <?php
+
+				if( Mage::getStoreConfig('amazereviews_section/facebook_config/enabled_facebook') == 1)
+				{
+
+					// CHECK WHETHER FACEBOOK SHARE ENABLED OR NOT
+
+					$appId =Mage::getStoreConfig('amazereviews_section/facebook_config/facebook_appkey') ;
+					$product=Mage::registry('current_product');
+					$productImage = $product->getImageUrl();
+					$redirectUrl = Mage::helper("core/url")->getCurrentUrl();
+					$link = Mage::helper("core/url")->getCurrentUrl();
+
+					$reviewerName = $this->__('%s', $this->htmlEscape($_review->getNickname()));
+
+					$fbUrl = 'http://www.facebook.com/dialog/feed?app_id=' . $appId . '&amp;description=' . $_review->getDetail() . '&amp;picture=' . $productImage . '&amp;name=' . $reviewerName . '&amp;message=&amp;redirect_uri=' . $redirectUrl . '&amp;link=' . $link; ?>
+					<a style="margin-right: 5px;" title="<?php echo $this->__('Share with Facebook'); ?>"
+					href="<?php echo $fbUrl; ?>" target="_blank"><img
+						src="<?php echo $this->getSkinUrl('apptha-reviews/images/fb.png') ?>" alt="<?php echo $this->__('Share with Facebook'); ?>" /> </a>
+						<?php }
+
+						// CHECK WHETHER GPLUS SHARE ENABLED OR NOT
+
+						if( Mage::getStoreConfig('amazereviews_section/google_config/enabled_gplus') == 1)
+						{
+							?> <a
+					href="https://plus.google.com/share?url=<?php echo $link; ?>"
+					onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+					title="<?php echo $this->__('Share with Google+'); ?>"><img
+						src="<?php echo $this->getSkinUrl('apptha-reviews/images/gplus.png') ?>"
+						alt="<?php echo $this->__('Share with Google+'); ?>" /> </a> <?php
+						}
+						?> </span> <span class="readMore dblcok fright"> <?php
+					$product=Mage::registry('current_product');
+					$productId = $product->getId();
+					?> <a
+						href="<?php echo $this->getReviewUrl($_review->getReviewId());?>"><?php echo $this->__('Read More') ?>
+					</a> </span>
+				</div>
+			</li>
+
+			<?php endforeach; // END FOREACH FOR REVIEW ITERATION  ?>
+		</ul>
+	</div>
+	<!-- End of block-content  -->
+	<?php
+
+        else:
+         echo '<div class="empty_content">'.$this->__('Currently no reviews for this product').'</div>';
+
+         // END IF FOR CHECKING REVIEWS
+	endif;?>
+	<?php
+	// END IF FOR SIDE BAR CONFIG
+	}?>
+
+</div>
+
+	<?php
+	// END IF FOR CHECKING MODULE CONFIG
+
+} ?>
+

@@ -1,0 +1,98 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Amazereviews
+ * @version     0.2.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ **/
+?>
+
+
+<?php
+if(Mage::getStoreConfig('amazereviews/module_config/enabled')==1)
+{
+
+	// GETTING PRODUCT ID
+	$product=$this->getproduct()->getId();
+	// GETTING PRODUCT DETAILS
+	$my_product = Mage::getModel('catalog/product')->load($product);
+	// GETTING PRODUCT URL
+	$my_product_url = $my_product->getProductUrl();
+
+	// GETTING NO OF REVIEWS FOR A PRODUCT
+	$count=count(Apptha_Amazereviews_Block_Reviewdetails_Averagerating::allReviews($product));
+
+
+	// GETTING AVERAGE RATING FOR A PRODUCT
+	$advanced_avg=Apptha_Amazereviews_Block_Reviewdetails_Averagerating::averageRatings($product);
+
+	?>
+
+
+	<?php
+	// CHECKING WHETHER REVIEWS EXIST OR NOT
+	if ($count > 0): ?>
+<div class="ratings">
+<?php
+// CHECKING WHETHER AVERAGE RATING EXIST OR NOT
+if ($advanced_avg > 0 ):?>
+	<div class="rating-box">
+		<div class="rating" style="width:<?php echo ceil($advanced_avg); ?>%"></div>
+	</div>
+	<?php endif; // END IF FOR CHECKING WHETHER AVERAGE RATING EXIST OR NOT  ?>
+
+	<span class="amount"> <?php
+	// IF REVIEW COUNT EQUALS TO ONE DISPLAY REVIEW, ELSE REVIEWS
+	if($count==1): ?> <a href="#"
+		onclick="var t = opener ? opener.window : window; t.location.href='<?php echo $my_product_url; ?>#review-list'; return false;"><?php echo $count.' '.$this->__('Review') ?>
+	</a> <?php else: ?> <a href="#"
+		onclick="var t = opener ? opener.window : window; t.location.href='<?php echo $my_product_url; ?>#review-list'; return false;"><?php echo $count.' '.$this->__('Reviews') ?>
+	</a> <?php endif; // END IF FOR REVIEW COUNT EQUALS TO ONE?> </span>
+</div>
+
+	<?php else: ?>
+<p class="no-rating">
+
+
+<?php
+
+// CHECKING WHETHER CUSTOMER LOGGED IN OR NOT
+// OR, CHECKING WHETHER GUEST ALLOW TO WRITE REVIEW IN ADMIN PANEL
+if (Mage::getSingleton('customer/session')->isLoggedIn()==1 || Mage::helper('review')->getIsGuestAllowToWrite()): ?>
+
+	<a href="<?php echo $my_product_url; ?>#review-form"><?php echo $this->__('Be the first to review this product') ?>
+	</a>
+	<?php else: ?>
+
+	<a href="<?php echo Mage::helper('customer')->getLoginUrl(); ?>"><?php echo $this->__('Be the first to review this product') ?>
+	</a>
+
+	<?php endif;  // END IF FOR CHECKING WHETHER CUSTOMER LOGGED IN OR NOT?>
+
+</p>
+	<?php endif;  // END IF FOR CHECKING WHETHER REVIEWS EXIST OR NOT
+
+} // END IF FOR MODULE ENABLED OR NOT ?>
+
+

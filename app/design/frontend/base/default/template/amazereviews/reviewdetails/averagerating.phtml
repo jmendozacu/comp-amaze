@@ -1,0 +1,1027 @@
+
+<?php
+
+/*
+ ***********************************************************/
+/**
+ * @name          : Amaze Reviews and Ratings.
+ * @version	      : 2.1.1
+ * @package       : apptha
+ * @since         : Magento 1.4
+ * @subpackage    : Amaze Reviews and Ratings.
+ * @author        : Apptha - http://www.apptha.com
+ * @copyright     : Copyright (C) 2011 Powered by Apptha
+ * @license       : GNU/GPL http://www.gnu.org/licenses/gpl-3.0.html
+ * @abstract      : Calculate and display average ratings for reviews
+ * @Creation Date : April 04 2013
+ * */
+
+/*
+ ***********************************************************/
+
+
+
+
+// CHECK WHETHER MODULE ENABLED OR NOT
+
+if(Mage::getStoreConfig('amazereviews_section/module_config/enabled')==1)
+{
+?>
+<script type="text/javascript">
+
+function reviewClick(){
+
+window.location.href = "#review-form";
+
+}
+
+function loginClick(){
+
+window.location.href = "<?php echo $login_url;?>";
+
+}
+
+</script>
+
+
+
+
+
+<!-- REVIEW HEADER  -->
+
+<div class="product-view">
+
+
+
+<div class="product-collateral">
+    <?php
+
+$apikey = Mage::getStoreConfig('amazereviews_section/licensekey_config/Apply_apptha_licensekey');
+$amazereviewsapikey = $this->helper('amazereviews')->amazeReviewsApiKey();
+
+// CHECKING WHETHER LICENSE KEY EXIST OR NOT
+
+if($apikey !=  $amazereviewsapikey)
+{    
+    ?>
+<div class="license_key">
+<?php  echo base64_decode('PGEgaHJlZj0iaHR0cDovL3d3dy5hcHB0aGEuY29tL2NoZWNrb3V0L2NhcnQvYWRkL3Byb2R1Y3QvMTQ5IiB0YXJnZXQ9Il9ibGFuayI+SW52YWxpZCBMaWNlbnNlIEtleSAtIEJ1eSBub3c8L2E+'); ?>
+</div>
+<?php } ?>
+
+    <h2 class="review_title">
+		 <?php
+
+		// GETTING CURRENT PRODUCT DETAIL
+		$product=$this->getAdvancedProductData();
+		echo $this->__('Reviews of ');
+
+		// DISPLAY PRODUCT NAME
+		echo $product->getName();
+		?>
+</h2>
+
+
+
+	<?php
+
+
+	// GETTING CURRENT PRODUCT ID
+	$product_id=$product->getId();
+
+	// GETTING All RATINGS
+	$count=count($this->totalRatings($product_id));
+
+	// GETTING AVERAGE RATINGS
+	$advanced_avg = $this->averageRatings($product_id);
+
+
+	?>
+
+
+	<div class="all-reviews fright" >
+		<?php
+
+		// GETTING ALL REVIEWS COUNT
+
+		$advanced_reviews =count($this->allReviews($product_id));
+		?>
+
+		<?php
+		// CHECKING WHETHER REVIEWS EXIST OR NOT
+		if($advanced_reviews > 0):?>
+		<?php
+
+		// CHECKING WHETHER ONE OR MORE REVIEW
+		if($advanced_reviews==1):?>
+			<a href="<?php echo $this->getReviewlistUrl();?>"><?php echo $this->__('Read %d Review', $advanced_reviews)?>
+			</a>
+			<?php else:?>
+
+
+			<a href="<?php echo $this->getReviewlistUrl();?>"><?php echo $this->__('Read %d Reviews', $advanced_reviews)?>
+			</a>
+			<?php endif; // END IF FOR CHECKING WHETHER ONE OR MORE REVIEW ?>
+			<?php
+			elseif (Mage::getSingleton('customer/session')->isLoggedIn()==1 || Mage::helper('review')->getIsGuestAllowToWrite()): ?>
+			<a href="<?php echo $my_product_url; ?>#review-form"><?php echo $this->__('Be the first to review this product')?>
+			</a>
+
+		<?php else:?>
+		<a href="<?php echo Mage::helper('customer')->getLoginUrl();?>"><?php echo $this->__('Be the first to review this product')?>
+			</a>
+
+			<?php
+			endif; // END IF FOR REVIEWS EXIST OR NOT?>
+		</div>
+
+<?php
+
+//CHECK CONDITION WHEHER RATINGS AVAILABLE OR NOT
+
+$ratingCount=$this->getRatings()->getSize();
+
+if($ratingCount!=0){
+?>
+<div	class="box-collateral appthaReview">
+ 
+	
+
+        <!-- DISPLAY AVERAGE RATE -->
+
+	<div class="rating_top group">
+		
+		<?php if($advanced_avg!=0): ?>
+                <h3 class="fleft">
+                <?php
+		echo $this->__('Average Rating : ');
+		?>
+		</h3>
+		<div class="rating-box fleft">
+			<div class="rating" style="width: <?php echo  ceil($advanced_avg); ?>%"></div>
+		</div>
+		<h5 class="fleft">
+			<strong> <?php echo round($advanced_avg/20,1); ?> </strong>
+
+			<?php
+				$avgrate = $this->__("Based on ");
+			
+			
+			$avgrate .= ($count==1)? $count.' '.$this->__("rating"): $count.' '.$this->__("ratings");
+			echo $avgrate;	
+
+                        ?>
+                </h5>
+                <?php endif; ?>	
+
+
+		<?php if($advanced_avg ==0):
+                ?>
+                <h3 class="fleft">
+                <?php
+		echo $this->__('Average Rating : ');
+		?>
+		</h3>
+		<div class="rating-box fleft">
+			<div class="rating" style="width: <?php echo  ceil($advanced_avg); ?>%"></div>
+		</div>
+		<h5 class="fleft">
+			<strong> <?php echo round($advanced_avg/20,1); ?> </strong>
+
+			<?php
+			if($count==0)
+			{
+				echo $this->__("(Based on $count rating)");
+			}
+
+                        ?>
+                </h5>
+                <?php	endif;	?>	
+
+
+		
+	</div>
+
+
+	<!-- CALCULATING INDIVIDUAL STAR RATINGS -->
+
+	<?php
+
+	$first_star=0;
+	$second_star=0;
+	$third_star=0;
+	$fourth_star=0;
+	$fifth_star=0;
+
+	// ITERATING ALL RATINGS
+
+	$ratings = $this->totalRatings($product_id);
+
+	foreach ($ratings as $individual_star)
+	{
+
+
+		if($individual_star==20)
+		{
+			$first_star=$first_star+1;
+
+		}
+		elseif ($individual_star==40)
+		{
+			$second_star=$second_star+1;
+		}
+		elseif ($individual_star==60)
+		{
+			$third_star=$third_star+1;
+		}
+		elseif ($individual_star==80)
+		{
+			$fourth_star=$fourth_star+1;
+		}
+		else
+		{
+			$fifth_star=$fifth_star+1;
+		}
+	}
+
+
+	// CALCULATING TOTAL RATINGS
+
+	$advanced_total=count($ratings);
+
+	// CALCULATING INDIVIDUAL RATINGS
+
+	$advanced_one=ceil(($first_star/$advanced_total)*100);
+	$advanced_two=ceil(($second_star/$advanced_total)*100);
+	$advanced_three=ceil(($third_star/$advanced_total)*100);
+	$advanced_four=ceil(($fourth_star/$advanced_total)*100);
+	$advanced_five=ceil(($fifth_star/$advanced_total)*100);
+
+
+
+	?>
+
+
+	<?php
+
+	// CHECKING WHETHER RATINGS EXIST OR NOT
+	if($advanced_total!=0): ?>
+        <?php $ratingbar_color = Mage::getStoreConfig('amazereviews_section/rating/label_color');
+?>
+
+	<!-- DISPLAY INDIVIDUAL STAR RATINGS -->
+
+	<div class="individual-star-ratings">
+		<ul class="rating-histogram">
+			<li class="advanced-font-small"><span><?php echo $this->__('5 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_five;?>%; background-color: <?php echo '#'.$ratingbar_color; ?> !important;"></div>
+				</div> &nbsp;<strong><?php echo $fifth_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('4 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_four;?>%; background-color: <?php echo '#'.$ratingbar_color; ?> !important;"></div>
+				</div> &nbsp;<strong><?php echo $fourth_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('3 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_three;?>%; background-color: <?php echo '#'.$ratingbar_color; ?> !important;"></div>
+				</div> &nbsp;<strong><?php echo $third_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('2 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_two;?>%; background-color: <?php echo '#'.$ratingbar_color; ?> !important;"></div>
+				</div> &nbsp;<strong><?php echo $second_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('1 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_one;?>%; background-color: <?php echo '#'.$ratingbar_color; ?> !important;"></div>
+				</div> &nbsp;<strong><?php echo $first_star;?> </strong>
+			</li>
+		</ul>
+	</div>
+
+	<?php else:?>
+	<h3 class="noneRated">
+	<?php
+	// DISPLAY MESSAGE, IF RATINGS NOT EXIST.
+	//echo $this->__('Be the first to rate this Product'); ?>
+	</h3><div class="individual-star-ratings">
+		<ul class="rating-histogram">
+			<li class="advanced-font-small"><span><?php echo $this->__('5 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_five;?>%"></div>
+				</div> &nbsp;<strong><?php echo $fifth_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('4 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_four;?>%"></div>
+				</div> &nbsp;<strong><?php echo $fourth_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('3 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_three;?>%"></div>
+				</div> &nbsp;<strong><?php echo $third_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('2 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_two;?>%"></div>
+				</div> &nbsp;<strong><?php echo $second_star;?> </strong>
+			</li>
+			<li class="advanced-font-small"><span><?php echo $this->__('1 Star');?></span>
+				<div class="rating-bars">
+					<div class="progress  " style="width:<?php echo $advanced_one;?>%"></div>
+				</div> &nbsp;<strong><?php echo $first_star;?> </strong>
+			</li>
+		</ul>
+	</div>
+	
+	<?php endif;
+	?>
+
+	<?php
+
+	// ADVANCED RATINGS
+
+	$advanced_flag=0;
+
+	if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+
+		$customer_id = Mage::getSingleton('customer/session')->getCustomer()->getId();
+
+		$product_id=$product->getId();
+
+
+		// SETTING FLAG FOR CUSTOMER RATED OR NOT IN APPROVED REVIEW LIST
+
+
+		$result = $this->checkVote($product_id,$customer_id);
+
+
+		// SETTING FLAG FOR CUSTOMER RATED OR NOT IN PENDING REVIEW LIST
+
+		$result_pending = $this->checkVotePending($product_id,$customer_id);
+
+		if($result)
+		{
+
+			$advanced_flag=1;
+		}
+		else
+		{
+			$advanced_flag=0;
+		}
+
+		if($result_pending)
+		{
+
+			$advanced_flag_pending=1;
+		}
+		else
+		{
+			$advanced_flag_pending=0;
+		}
+
+	}
+
+	?>
+
+
+
+        <div class="line <?php
+
+        // CHECKING WHETHER 3 COLUMN OR NOT
+        // IF 3 COLUMN, ADD CLASS 'threecolumn_view'
+
+        if($this->getLayout()->getBlock('root')->getTemplate()=='page/3columns.phtml')
+        {
+            echo 'threecolumn_view';
+        }
+        ?>">
+	<?php
+
+	// CHECKING WHETHER CUSTOMER RATED OR NOT
+
+	if($advanced_flag == 0 && $advanced_flag_pending == 0): ?>
+
+
+	
+
+
+<!-- RATINGS FORM -->
+
+  <!-- DISPLAY SUCCESSFUL MESSAGE -->
+		<div id="result" class="result_content"></div>
+
+<div class="form-add" id="rating-add">
+
+
+       	<input type="hidden" name="advanced_rate" id="advanced_rate" value="<?php echo $this->getAllowWriteReviewFlag(); ?>" />
+
+		<form action="<?php echo $this->getAction() ?>" method="post"
+			id="ratings-form" onclick="return validateForm();">
+			<fieldset>
+
+							<?php $formKey = Mage::getSingleton('core/session')->getFormKey(); ?>
+			<input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
+				            <input type="text" name="nickname" id="ratings_nickname_field"
+								class="input-text required-entry"
+								value="<?php if(Mage::getSingleton('customer/session')->isLoggedIn()==0){echo $this->__('Anonymous user');}else{echo $this->htmlEscape($data->getNickname());} ?>"  style="display: none"/>
+
+							<input type="text" name="title" id="ratings_summary_field"
+								class="input-text required-entry"
+								value="<?php echo $this->htmlEscape($this->getReviewTitle()) ?>" style="display: none"/>
+
+							<textarea name="detail" id="ratings_review_field" cols="1" rows="1"
+								class="required-entry" style="display: none">
+								<?php echo $this->htmlEscape($this->getReviewDetails()) ?>
+							</textarea>
+
+				<?php if( $this->getRatings() && $this->getRatings()->getSize()): ?>
+
+
+                           	<h3 class="advanced-rate-title">
+		                <?php echo $this->__('Have you used this product?'); ?>
+		                </h3>
+
+                                <h3 class="advanced-rate-title">
+		                <?php echo $this->__('Rate it now.'); ?>
+                 		</h3>
+
+				<input type="hidden" name="rating-option" class="rating-option"
+					value="<?php echo $this->getRatings()->getSize();?>" />
+
+				<span id="ratings-input-message-box"></span>
+				<ul class="data-table" id="avrg_rating">
+				<?php foreach ($this->getRatings() as $_rating): ?>
+					<li class="group"><label><?php	echo $this->escapeHtml($_rating->getRatingCode());
+					 ?>
+					</label>
+						<div class="starContainer fleft">
+							<ul class="fk-give-star " data-rating-count="558" stars="0"
+								data-ratings-location="Top">
+								<?php $i = 0; foreach ($_rating->getOptions() as $_option): ?>
+								<?php if($i ==0) { $starclass = 'star'; ?>
+								<li class="user-ratings"
+									id="user-ratings<?php echo $this->escapeHtml($_rating->getRatingCode()) ?>"
+									style="width: 0%"></li>
+									<?php $i++;} else { $starclass = 'stars'; } ?>
+
+								<li><input type="radio"
+									name="ratings[<?php echo $_rating->getId() ?>]"
+									id="<?php echo $this->escapeHtml($_rating->getRatingCode()) ?>__<?php echo $_option->getValue() ?>"
+									value="<?php echo $_option->getId() ?>" class="rating-radio"
+									style="display: none;" /> <a
+									title="Rate this <?php echo $_option->getValue() ?> star out of 5"
+									class="<?php echo $starclass;?>-<?php echo $_option->getValue() ?> login-required"
+									id="<?php echo $this->escapeHtml($_rating->getRatingCode()) ?>__<?php echo $_option->getValue() ?>"><?php echo $_option->getValue() ?>
+								</a></li>
+
+								<?php endforeach;?>
+
+							</ul>
+
+
+						</div>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+				<input type="hidden" name="validate_rating" class="validate-rating"
+					value="" />
+
+				<?php endif; ?>
+
+
+
+			</fieldset>
+			<div class="buttons-set">
+				<button type="submit" style="display: none" id="rating-button"
+					title="<?php echo $this->__('Submit Review') ?>" class="ratings-button">
+					<span><span><?php echo $this->__('Submit Review') ?> </span> </span>
+				</button>
+
+
+			</div>
+		</form>
+
+<!-- FORM VALIDATION -->
+
+<script type="text/javascript">
+
+$$('#ratings-form a').invoke('observe','click',function(field) {
+
+    var str=this.id;
+
+    var newstr = str.replace("__", "_");
+    $(str).checked=true;
+    var n=str.split("__");
+    SetWidth = (n[1]*20)+'%';
+    var userratings = 'user-ratings'+n[0];
+
+    $(userratings).setStyle({width: SetWidth});
+    var form = $('ratings-form');
+    var totalCount = 0;
+
+
+
+    $(newstr).checked=true;
+    var m=newstr.split("_");
+    SetWidth = (m[1]*20)+'%';
+    var userrating = 'user-rating'+m[0];
+
+    $(userrating).setStyle({width: SetWidth});
+
+
+
+    $$('#ratings-form input[type="radio"]:checked').each(function(c){
+
+
+    	totalCount  = totalCount + 1;
+
+ 	    });
+
+
+    if(totalCount == $$('[name="rating-option"]')[0].value)
+    {
+
+    	 $('ratings-form').hide();
+
+ 	   $('result').update('Your ratings has been accepted for moderation.');
+
+   $('ratings-form').request({
+
+    	onFailure: function() {$('result').update('Something went wrong');
+     $('ratings-form').show();
+    }
+
+    	});
+
+
+
+
+    }
+
+
+
+});
+
+
+// REDIRECT TO LOGIN PAGE
+
+function validateForm(){
+
+	if($('advanced_rate').value == 0 )
+	{
+	window.location.href = "<?php echo Mage::helper('customer')->getLoginUrl();?>";
+	}
+
+
+
+}
+
+
+</script>
+
+	</div>
+
+
+<?php else: ?>
+
+		<h5 class="success_msg">
+
+		<?php
+
+
+	// ASSIGNING RATINGS VOTES FROM APPROVED REVIEW LIST
+
+		if($result)
+		{
+		echo $this->__("Your ratings for this product");
+
+		$_votes = $result->getRatingVotes();
+		}
+
+
+	// ASSIGNING RATINGS VOTES FROM PENDING REVIEW LIST
+
+		if($result_pending)
+		{
+
+			echo $this->__("Your ratings for this product is yet to be approved ");
+
+		$_votes = $result_pending->getRatingVotes();
+		}
+
+
+
+			?>
+
+			</h5>
+
+			<?php
+
+		    // DISPLAY RATING SUMMARY & PERCENTAGE
+			if (count($_votes)): ?>
+			<ul class="ratings-table group" id="avrg_rating">
+			<?php foreach ($_votes as $_vote): ?>
+				<li><label><?php echo $this->escapeHtml($_vote->getRatingCode()) ?>
+				</label>
+					<div class="rating-box">
+						<div class="rating" style="width:<?php echo $_vote->getPercent() ?>%;"></div>
+					</div>
+				</li>
+				<?php endforeach; ?>
+			</ul>
+                <div class="clear"></div>
+			<?php endif; ?>
+
+
+		<?php endif; ?>
+
+
+                  <?php
+          // ASSIGNING LOGIN IN URL TO REDIRECT
+          $login_url=Mage::helper('customer')->getLoginUrl();
+
+		// CHECKING WHETHER CUSTOMER LOGGED IN OR NOT
+		if ($this->getAllowWriteReviewFlag()): ?>
+
+		<!-- REDIRECT TO REVIEW FORM  -->
+
+
+                <button class="button" title="<?php echo $this->__('Write Your Review') ?>" onclick="reviewClick()">
+					<span><span><?php echo $this->__('Write Your Review') ?> </span> </span>
+				</button>
+
+		<?php else: ?>
+
+		<!-- REDIRECT TO LOGIN PAGE   -->
+
+                <button class="button" title="<?php echo $this->__('Write Your Review') ?>" onclick="loginClick()">
+					<span><span><?php echo $this->__('Write Your Review') ?> </span> </span>
+				</button>
+		<?php endif; ?>
+
+
+
+
+<!-- WRITE A REVIEW BUTTON ACTION -->
+
+<script type="text/javascript">
+
+function reviewClick(){
+
+window.location.href = "#review-form";
+
+}
+
+function loginClick(){
+
+window.location.href = "<?php echo $login_url;?>";
+
+
+}
+
+</script>
+
+
+
+
+
+	</div>
+	</div>
+	
+	
+	
+<?php }
+else
+{
+?>  <div	class="box-collateral appthaReview">
+<?php
+	$product=$this->getAdvancedProductData();
+
+	// GETTING CURRENT PRODUCT ID
+	$product_id=$product->getId();
+
+	// GETTING All RATINGS
+	$count=count($this->totalRatings($product_id));
+
+	// GETTING AVERAGE RATINGS
+	$advanced_avg = $this->averageRatings($product_id);
+	?>
+<div class="fright" id="review_details">
+	<div class="all-reviews" >
+		<?php
+		// GETTING ALL REVIEWS COUNT
+
+		$advanced_reviews =count($this->allReviews($product_id));
+		?>
+		<?php
+		// CHECKING WHETHER REVIEWS EXIST OR NOT
+		if($advanced_reviews > 0):?>
+		<?php
+		// CHECKING WHETHER ONE OR MORE REVIEW
+		if($advanced_reviews==1):?>
+			<a href="<?php echo $this->getReviewlistUrl();?>"><?php echo $this->__('Read %d Review', $advanced_reviews)?>
+			</a>
+			<?php else:?>
+			<a href="<?php echo $this->getReviewlistUrl();?>"><?php echo $this->__('Read %d Reviews', $advanced_reviews)?>
+			</a>
+			<?php endif; // END IF FOR CHECKING WHETHER ONE OR MORE REVIEW ?>
+			<?php
+			elseif (Mage::getSingleton('customer/session')->isLoggedIn()==1 || Mage::helper('review')->getIsGuestAllowToWrite()): ?>
+			<a href="<?php echo $my_product_url; ?>#review-form"><?php echo $this->__('Be the first to review this product')?>
+			</a>
+		<?php else:?>
+		<a href="<?php echo Mage::helper('customer')->getLoginUrl();?>"><?php echo $this->__('Be the first to review this product')?>
+			</a>
+
+			<?php
+			endif; // END IF FOR REVIEWS EXIST OR NOT?>
+	</div>
+    <div class="clear"></div>
+    <div class="all-reviews" >
+		<?php
+          // ASSIGNING LOGIN IN URL TO REDIRECT
+          $login_url=Mage::helper('customer')->getLoginUrl();
+
+		// CHECKING WHETHER CUSTOMER LOGGED IN OR NOT
+		if ($this->getAllowWriteReviewFlag()): ?>
+
+		<!-- REDIRECT TO REVIEW FORM  -->
+
+
+                <button class="button" title="<?php echo $this->__('Write Your Review') ?>" onclick="reviewClick()">
+										<span><span><?php echo $this->__('Write Your Review') ?> </span> </span>
+				</button>
+
+		<?php else: ?>
+
+		<!-- REDIRECT TO LOGIN PAGE   -->
+
+                <button class="button" title="<?php echo $this->__('Write Your Review') ?>" onclick="loginClick()">
+					<span><span><?php echo $this->__('Write Your Review') ?> </span> </span>
+				</button>
+		<?php endif; ?>
+			</div>
+    <div class="clear"></div>
+</div>
+        <div class="individual-star-ratings">
+<?php
+	$product=$this->getAdvancedProductData();
+
+	// GETTING CURRENT PRODUCT ID
+	$product_id=$product->getId();
+
+	// GETTING All RATINGS
+	$count=count($this->totalRatings($product_id));
+
+	// GETTING AVERAGE RATINGS
+	$advanced_avg = $this->averageRatings($product_id);
+	?>
+
+	
+		<?php
+		// GETTING ALL REVIEWS COUNT
+
+		$advanced_reviews =count($this->allReviews($product_id));
+		?>
+		<?php
+		// CHECKING WHETHER REVIEWS EXIST OR NOT
+		if($advanced_reviews > 0):?>
+		<?php
+		// CHECKING WHETHER ONE OR MORE REVIEW
+		if(($advanced_reviews==1)&& ($advanced_reviews==0)) :?>
+			<?php echo $this->__('There are currently %d Review', $advanced_reviews)?>
+			
+			<?php else:?>
+			<?php echo $this->__('There are currently %d Reviews', $advanced_reviews)?>
+			
+			<?php endif; // END IF FOR CHECKING WHETHER ONE OR MORE REVIEW 
+			endif;?>
+
+<?php 
+echo("Please add your own review,");?>
+ <br/><?php echo(" if you are interested in reviewing  for ");
+
+		// GETTING CURRENT PRODUCT DETAIL
+		$product=$this->getAdvancedProductData();
+		
+		// DISPLAY PRODUCT NAME
+		echo $product->getName();
+
+
+?>
+        </div>
+        </div>
+
+<?php }
+?>
+	
+<?php
+if(isset($product_id)){ 
+$final_price = $snippet_price = NULL;
+$product_snippets = Mage::getModel('catalog/product')->load($product_id);
+$final_price  = $product_snippets->getFinalPrice();
+$snippet_price   = Mage::helper('core')->currency($final_price, true, false);
+?>        
+<!-- start rich snippets -->
+<div itemscope itemtype="http://schema.org/Product" >
+<meta itemprop="name" content="<?php echo $product->getName();?>" />
+<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+<meta itemprop="ratingValue" content="<?php if(isset($product_id)){ echo  ceil($this->averageRatings($product_id)/20); }else{echo '0';} ?>" />
+<meta itemprop="reviewCount" content="<?php if(isset($product_id)){ echo count($this->allReviews($product_id)); }else{ echo '0';} ?>" />
+</div>
+
+<div itemprop="offers" itemscope itemtype="http://schema.org/Offer">    
+<meta itemprop="price" content="<?php echo $snippet_price; ?>" />
+<span style="display:none"><?php echo $snippet_price; ?></span>
+</div>
+<?php }?>
+</div>
+<!-- end rich snippets -->
+
+	<div class="clear"></div>
+
+	<!-- INCLUDE MOST ACCEPTED REVIEWS PAGE -->
+
+	<div id="review-list">
+
+	<?php echo $this->getChildHtml('mostacceptedreviews') ?>
+
+	</div>
+
+	<!--  REVIEW FORM -->
+
+	<div class="form-add">
+		<h2>
+		<?php echo $this->__('Write Your Own Review') ?>
+		</h2>
+		<?php
+
+		// CHECKING WHETHER CUSTOMER LOGGED IN OR NOT
+		if ($this->getAllowWriteReviewFlag()): ?>
+		<form action="<?php echo $this->getAction() ?>" method="post"
+			id="review-form">
+			<?php $formKey = Mage::getSingleton('core/session')->getFormKey(); ?>
+			<input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
+			<fieldset>
+			<?php echo $this->getChildHtml('form_fields_before')?>
+				<h3>
+				<?php echo $this->__("You're reviewing:"); ?>
+					<span><?php echo $this->htmlEscape($this->getProductInfo()->getName()) ?>
+					</span>
+				</h3>
+				<ul class="form-list">
+					<li><label for="nickname_field" class="required"><em>*</em> <?php echo $this->__('Nickname') ?>
+					</label>
+						<div class="input-box">
+							<input type="text" name="nickname" id="nickname_field"
+								class="input-text required-entry"
+								value="<?php echo $this->htmlEscape($data->getNickname()) ?>" />
+						</div>
+					</li>
+					<li><label for="summary_field" class="required"><em>*</em> <?php echo $this->__('Summary of Your Review') ?>
+					</label>
+						<div class="input-box">
+							<input type="text" name="title" id="summary_field"
+								class="input-text required-entry"
+								value="<?php echo $this->htmlEscape($data->getTitle()) ?>" />
+						</div>
+					</li>
+					<li><label for="review_field" class="required"><em>*</em> <?php echo $this->__('Review') ?>
+					</label>
+						<div class="input-box">
+							<textarea name="detail" id="review_field" cols="5" rows="3"
+								class="required-entry"></textarea>
+						</div>
+					</li>
+				</ul>
+				<?php if( $this->getRatings() && $this->getRatings()->getSize()): ?>
+				<h5>
+				<?php echo $this->__('How do you rate this product?') ?>
+					<em class="required">*</em>
+				</h5>
+				<span id="input-message-box"></span>
+				<ul class="data-table" id="product-review-table">
+				<?php foreach ($this->getRatings() as $_rating): ?>
+					<li class="group"><label><?php echo $this->escapeHtml($_rating->getRatingCode()) ?>
+					</label>
+						<div class="starContainer">
+							<ul class="fk-give-star " data-rating-count="558" stars="0"
+								data-ratings-location="Top">
+								<?php $i = 0; foreach ($_rating->getOptions() as $_option): ?>
+								<?php if($i ==0) { $starclass = 'star'; ?>
+								<li class="user-rating"
+									id="user-rating<?php echo $this->escapeHtml($_rating->getRatingCode()) ?>"
+									style="width: 0%"></li>
+									<?php $i++;} else { $starclass = 'stars'; } ?>
+
+								<li ><input type="radio"
+									name="ratings[<?php echo $_rating->getId() ?>]"
+									id="<?php echo $this->escapeHtml($_rating->getRatingCode()) ?>_<?php echo $_option->getValue() ?>"
+									value="<?php echo $_option->getId() ?>" class="radio" style="display:none;"
+									 /> <a
+									title="Rate this <?php echo $_option->getValue() ?> star out of 5"
+									class="<?php echo $starclass;?>-<?php echo $_option->getValue() ?> login-required"
+									id="<?php echo $this->escapeHtml($_rating->getRatingCode()) ?>_<?php echo $_option->getValue() ?>"><?php echo $_option->getValue() ?>
+								</a></li>
+								<?php endforeach; ?>
+							</ul>
+
+						</div>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+				<input type="hidden" name="validate_rating" class="validate-rating"
+					value="" />
+				<script type="text/javascript">decorateTable('product-review-table')</script>
+				<?php endif; ?>
+
+
+
+			</fieldset>
+			<div class="buttons-set">
+				<button type="submit"
+					title="<?php echo $this->__('Submit Review') ?>" class="button">
+					<span><span><?php echo $this->__('Submit Review') ?> </span> </span>
+				</button>
+			</div>
+		</form>
+
+		<!-- FORM VALIDATION -->
+
+
+<script type="text/javascript">
+
+$$('#review-form a').invoke('observe','click',function(field) {
+
+
+    var str=this.id;
+    $(str).checked=true;
+    var n=str.split("_");
+    SetWidth = (n[1]*20)+'%';
+    var userrating = 'user-rating'+n[0];
+
+    $(userrating).setStyle({width: SetWidth});
+
+});
+
+
+</script>
+
+<script type="text/javascript">
+    //<![CDATA[
+        var dataForm = new VarienForm('review-form');
+        Validation.addAllThese(
+        [
+               ['validate-rating', '<?php echo $this->__('Please select one of each of the ratings above') ?>', function(v) {
+                    var trs = $('product-review-table').select('div');
+                    var inputs;
+                    var error = 1;
+
+                    for( var j=0; j < trs.length; j++ ) {
+                        var tr = trs[j];
+                      //  if( j > 0 ) {
+                            inputs = tr.select('input');
+
+                            for( i in inputs ) {
+                                if( inputs[i].checked == true ) {
+                                    error = 0;
+                                }
+                            }
+
+                            if( error == 1 ) {
+                                return false;
+                            } else {
+                                error = 1;
+                            }
+                       // }
+                    }
+                    return true;
+                }]
+        ]
+        );
+    //]]>
+    </script>
+    <?php else: ?>
+
+
+		<!-- REDIRECT TO LOGIN PAGE -->
+
+		<p class="review-nologged" id="review-form">
+		<?php echo $this->__('Only registered users can write reviews. Please, <a href="%s">log in</a> or <a href="%s">register</a>', $this->getLoginLink(), Mage::helper('customer')->getRegisterUrl()) ?>
+		</p>
+		<?php endif; // END IF FOR CUSTOMER LOGGED IN OR NOT ?>
+	</div>
+</div>
+</div>
+
+
+
+<?php } // END IF FOR MODULE ENABLED OR NOT ?>
+
+
+
+
+

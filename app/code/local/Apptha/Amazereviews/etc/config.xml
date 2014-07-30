@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Amazereviews
+ * @version     0.2.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ **/
+ -->
+<config>
+    <modules>
+        <Apptha_Amazereviews>
+            <version>0.2.2</version>
+        </Apptha_Amazereviews>
+    </modules>    
+    <frontend>
+        <translate>
+            <modules>
+                <translations>
+                    <files>
+                        <default>Apptha_Amazereviews.csv</default>
+                    </files>
+                </translations>
+            </modules>
+        </translate>    
+        <routers>
+            <amazereviews>
+                <use>standard</use>
+                <args>
+                    <module>Apptha_Amazereviews</module>
+                    <frontName>amazereviews</frontName>
+                </args>
+            </amazereviews>
+        </routers>        
+        <layout>
+            <updates>
+                <amazereviews>
+                    <file>amazereviews.xml</file>
+                </amazereviews>
+            </updates>
+        </layout>        
+    </frontend>    
+    <acl>    
+        <resources>
+            <all>
+                <title>Allow Everything</title>
+            </all>
+            <admin>    
+                <routers>
+                    <amazereviews>
+                        <use>admin</use>
+                        <args>
+                            <module>Apptha_Amazereviews</module>
+                            <frontName>amazereviews</frontName>
+                        </args>
+                    </amazereviews>
+                </routers>        
+                <system>        
+                    <children>
+                        <config>
+                            <children>
+                                <amazereviews translate="title">
+                                    <title>Amaze Reviews</title>
+                                    <sort_order>100</sort_order>
+                                </amazereviews>
+                            </children>
+                        </config>
+                    </children>            
+                </system>      
+            </admin>
+        </resources>
+    </acl>
+    <adminhtml>
+        <translate>
+            <modules>
+                <translations>
+                    <files>
+                        <default>Apptha_Amazereviews.csv</default>
+                    </files>
+                </translations>
+            </modules>
+        </translate>
+        <menu>
+            <catalog>
+                <children>
+                    <reviews_ratings>
+                        <children>                      
+                            <amaze translate="title" module="amazereviews">
+                                <title>Amaze Reviews and Ratings</title>
+                                <sort_order>300</sort_order>	
+                                <children>					    	
+                                    <abuselist translate="title" module="amazereviews">
+                                        <title>Abused Reviews List</title>
+                                        <action>amazereviews/adminhtml_amazereviews</action>
+                                    </abuselist>					    	  
+                                    <configuration translate="title" module="amazereviews">
+                                        <title>Module Configuration</title>
+                                        <action>adminhtml/system_config/edit/section/amazereviews_section</action>
+                                    </configuration>     	  			    	
+                                </children>					    					    					    			    						    	
+                            </amaze>                         
+                        </children>        
+                    </reviews_ratings>
+                </children>
+            </catalog>			
+        </menu>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <Apptha_Amazereviews>
+                            <title>Amazereviews Module</title>
+                            <sort_order>10</sort_order>
+                        </Apptha_Amazereviews>
+                    </children>
+                </admin>
+            </resources>
+        </acl>		
+        <layout>
+            <updates>
+                <amazereviews>
+                    <file>amazereviews.xml</file>
+                </amazereviews>
+            </updates>
+        </layout>
+    </adminhtml>     
+    <global>    
+        <models>            
+            <amazereviews>  
+                <class>Apptha_Amazereviews_Model</class>
+                <resourceModel>amazereviews_mysql4</resourceModel>
+            </amazereviews>
+            <amazereviews_mysql4>
+                <class>Apptha_Amazereviews_Model_Mysql4</class>
+                <entities>
+                    <amazereviews>
+                        <table>amazereviews</table>
+                    </amazereviews>                                     
+                    <reviewhelpful>
+                        <table>reviewhelpful</table>
+                    </reviewhelpful>                            
+                </entities>                
+            </amazereviews_mysql4>            
+        </models>        
+        <models>
+            <review_resource>
+                <rewrite>
+                    <review_product_collection>Apptha_Amazereviews_Model_Resource_Review_Product_Collection</review_product_collection>
+                </rewrite>
+            </review_resource>
+        </models>                           
+        <resources>
+            <amazereviews_setup>
+                <setup>
+                    <module>Apptha_Amazereviews</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </amazereviews_setup>
+            <amazereviews_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </amazereviews_write>
+            <amazereviews_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </amazereviews_read>                     
+        </resources>      
+        <blocks>
+            <amazereviews>
+                <class>Apptha_Amazereviews_Block</class>                                
+            </amazereviews>
+         </blocks>        
+        <helpers>
+            <amazereviews>
+                <class>Apptha_Amazereviews_Helper</class>
+            </amazereviews>
+        </helpers>
+    </global>    
+    <default>             
+        <amazereviews>
+            <view>
+                <enabled>1</enabled>
+                <items_per_page>20</items_per_page>
+                <days_difference>3</days_difference>
+            </view>
+            <module_config>
+                <enabled>1</enabled>
+            </module_config>        
+            <deletereviews>
+                <active>1</active>
+            </deletereviews>                   
+        </amazereviews>
+        <amazereviews_section>
+            <rating>
+                <label_color>04B431</label_color>
+            </rating>
+            <sidebar>
+                <max_words>10</max_words>
+                <title_words>4</title_words>
+            </sidebar> 
+            <autodelete_abusedreviews>
+                <count>10</count>
+            </autodelete_abusedreviews>			
+        </amazereviews_section>       
+    </default>   
+</config>

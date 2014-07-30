@@ -1,0 +1,467 @@
+<?php
+
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Amazereviews
+ * @version     0.2.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ **/
+
+// CHECKING WHETHER MODULE ENABLED OR NOT
+
+if(Mage::getStoreConfig('amazereviews_section/module_config/enabled')==1)
+{
+	?>
+
+	<?php
+
+	// GETTING CURRENT PRODUCT ID
+
+	$product=Mage::registry('current_product');
+	$productId = $product->getId();
+
+	?>
+
+	<?php
+
+	// GETTING REVIEW DETAILS
+
+	$reviewscollection = $this->getReviews();
+
+	$_items =$reviewscollection->getItems();
+	?>
+
+
+<!-- DISPLAY MOST ACCEPTED REVIEWS -->
+
+<div class="box-collateral box-reviews" id="customer-reviews">
+<?php
+
+// CHECKING WHETHER REVIEW EXIST OR NOT
+
+if (count($_items)):?>
+	<h2>
+	<?php echo $this->__('Most Accepted Reviews') ?>
+	</h2>
+	<div class="review-title-rating">
+	<?php
+
+	// ITERATING ALL REVIEWS
+
+	foreach ($_items as $_review):
+	?>
+		<div class="reivew-container">
+			<div class="reivew-header group">
+                            <h3 >
+                                <?php echo $this->htmlEscape($_review->getTitle()); ?> <!-- DISPLAY REVIEW TITLE -->
+                            </h3>
+                            <div class="review_addedby">
+                               
+                                <span class="reviewed_date">
+                                    <?php echo $this->__('Reviewed on %s',$this->formatDate($_review->getCreatedAt()),'long'); ?></span>, <?php echo $this->__('By'); ?> <span class="nickName">
+                                
+                                    <?php echo $this->__('%s', $this->htmlEscape($_review->getNickname())) ?>
+                                </span>
+                            </div>
+			</div>
+
+			<?php
+			// DISPLAY RATING SUMMARY & PERCENTAGE
+			$_votes = $_review->getRatingVotes(); ?>
+			<?php
+			// CHECKING WHETHER VOTES EXIST OR NOT
+			if (count($_votes)): ?>
+			<ul class="ratings-table group">
+			<?php foreach ($_votes as $_vote): ?>
+				<li><label><?php echo $this->escapeHtml($_vote->getRatingCode()) ?>
+				</label>
+					<div class="rating-box">
+						<div class="rating" style="width:<?php echo $_vote->getPercent() ?>%;"></div>
+					</div>
+				</li>
+				<?php endforeach; ?>
+			</ul>
+			<?php endif; // END IF FOR CHECKING WHETHER VOTES EXIST OR NOT ?>
+
+
+			
+
+
+			<div class="review-details">
+			<?php echo nl2br($this->htmlEscape($_review->getDetail())) ?>
+			</div>
+                    <div class="permalink-reportabuse-date reivew-sub-header group">
+				<span class="permalink fleft"> <a
+					href="<?php echo $this->getReviewUrl($_review->getReviewId());?>"><?php echo $this->__('Permalink') ?>
+				</a> </span> <span class="reportabuse fleft"> <?php
+				$product=Mage::registry('current_product');
+				$productId = $product->getId();
+				?> <?php
+
+
+
+				$flag=0;
+				$check_review=0;
+				$check_vote=0;
+
+				//SETTING FLAG FOR WHETHER CUSTOMER LOGGED IN OR NOT
+
+				if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+
+					$customer_id = Mage::getSingleton('customer/session')->getCustomer()->getId();
+					$customer_mail = Mage::getSingleton('customer/session')->getCustomer()->getEmail();
+
+					$flag=1;
+
+					$review_id=$this->htmlEscape($_review->getId());
+
+					// SETTING FLAG FOR CUSTOMER ABUSED REVIEW OR NOT
+
+					$check=$this->getCheckFlag($customer_mail,$review_id);
+
+
+					if($check)
+					{
+						$check_review=1;
+					}
+					else
+					{
+						$check_review=0;
+					}
+
+					// SETTING FLAG FOR CUSTOMER VOTED A REVIEW OR NOT
+
+
+
+					$vote=$this->getCheckVote($customer_id,$review_id);
+
+					if($vote)
+					{
+						$check_vote=1;
+					}
+					else
+					{
+						$check_vote=0;
+					}
+
+
+
+				}
+				else
+				{
+					$flag=0;
+				}
+
+				?>
+
+
+				<?php
+
+				// CHECK WHETHER CUSTOMER EXIST OR NOT.
+
+				if($check_review<=0):?> <?php if($flag!=0):?> <a
+				name="<?php echo $_review->getReviewId();?>" class="reportme" id="reportme<?php echo $_review->getReviewId();?>"
+					href="javascript:void(0)" ><?php echo $this->__('Report Abuse'); ?>
+				</a> <!-- REDIRECT TO LOGIN PAGE --> <?php else: ?> <a
+					href="<?php echo Mage::helper('customer')->getLoginUrl();?>"><?php echo $this->__('Report Abuse'); ?>
+				</a> <?php endif;?> </span>
+
+				<div  class="success_msg"  id="success_<?php echo $_review->getReviewId();?>">
+
+                                </div>
+
+				 <span class="vote_review"><?php else:
+
+				// DISPLAY ABUSED MESSAGE
+				echo '<span class="vote_review">'. $this->__('You have abused this review!').'</span>';
+				endif;?> </span>
+			</div>
+
+			<div class="socialshare-useful-yesno reivew-sub-header group">
+				<span class="socialshare"> <?php 
+
+				if( Mage::getStoreConfig('amazereviews_section/facebook_config/enabled_facebook') == 1)
+				{
+
+					// CHECK WHETHER FACEBOOK SHARE ENABLED OR NOT
+
+					$appId =Mage::getStoreConfig('amazereviews_section/facebook_config/facebook_appkey') ;
+					$product=Mage::registry('current_product');
+					$productImage = $product->getImageUrl();
+					$redirectUrl = Mage::helper("core/url")->getCurrentUrl();
+					$link = Mage::helper("core/url")->getCurrentUrl();
+
+					$reviewerName = $this->__('%s', $this->htmlEscape($_review->getNickname()));
+
+					$fbUrl = 'http://www.facebook.com/dialog/feed?app_id=' . $appId . '&amp;description=' . $_review->getDetail() . '&amp;picture=' . $productImage . '&amp;name=' . $reviewerName . '&amp;message=&amp;redirect_uri=' . $redirectUrl . '&amp;link=' . $link; ?>
+					<a style="margin-right: 5px;" title="<?php echo $this->__('Share with Facebook'); ?>"
+					href="<?php echo $fbUrl; ?>" target="_blank"><img
+						src="<?php echo $this->getSkinUrl('apptha-reviews/images/fb.png') ?>" alt="<?php echo $this->__('Share with Facebook'); ?>" /> </a>
+						<?php }
+
+						// CHECK WHETHER GPLUS SHARE ENABLED OR NOT
+
+						if( Mage::getStoreConfig('amazereviews_section/google_config/enabled_gplus') == 1)
+						{
+							?> <a
+					href="https://plus.google.com/share?url=<?php echo $link; ?>"
+					onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+					title="<?php echo $this->__('Share with Google+'); ?>"><img
+						src="<?php echo $this->getSkinUrl('apptha-reviews/images/gplus.png') ?>"
+						alt="<?php echo $this->__('Share with Google+'); ?>" /> </a> <?php
+						}
+						?> </span> <span class="useful"> <strong> <?php
+
+						// CALCULATE REVIEW USEFUL PERCENTAGE
+
+
+
+						$count_yes=$this->htmlEscape($_review->getCounterYes());
+						$count_no=$this->htmlEscape($_review->getCounterNo());
+						$count_total=$count_yes+$count_no;
+
+						$counter_percent=round(($count_yes/$count_total)*100,2);
+
+						// DISPLAY REVIEW USEFUL PERCENTAGE
+
+						if($count_total>0)
+						{
+							if($count_total==1 )
+							{
+								echo $counter_percent.'%'.$this->__(' of %d user found this review helpful',$count_total);
+							}
+							else
+							{
+								echo $counter_percent.'%'.$this->__(' of %d users found this review helpful',$count_total);
+							}
+						}
+						?> </strong> </span>
+
+                            <span class="yesno"> <?php
+
+						//CHECKING WHETHER CUSTOMER LOGGED IN OR NOT
+						if($flag!=0):?> <?php
+						// CHECKING WHETHER CUSTOMER EXIST OR NOT
+						if($customer_id)
+						{
+							$review_customer_id=$_review->getCustomerId();
+
+
+							// CHECKING WHETHER CUSTOMER REVIEWED OR NOT
+							if($customer_id==$review_customer_id)
+							{
+								// CHECKING WHETHER REVIEWER DELETE OPTIN ENABLE OR NOT
+								if(Mage::getStoreConfig('amazereviews_section/deletereviews/active')==1) : ?>
+
+
+					<a
+					href="<?php echo $this->deleteReviewUrl($_review->getReviewId());?>"
+					onclick="return confirm('Are you sure you want to delete this review?')">
+					<?php echo $this->__('Delete'); ?> </a> <?php
+
+					endif; // END IF FOR CHECKING WHETHER REVIEWER DELETE OPTIN ENABLE OR NOT
+
+					echo $this->__('Your review would be voted by others');
+
+							}
+							else
+							{
+
+								//  CHECKING WHETHER CUSTOMER VOTED OR NOT
+								if($check_vote<=0)
+								{
+
+
+									// DISPLAYING REVIEW USEFUL LINK
+
+									?> <?php echo $this->__('Was this review helpful ? ') ?> <a
+					class="helpfullmenu"
+					href="<?php echo $this->getAcceptedYesUrl($_review->getReviewId(),$productId);?>"><?php echo $this->__('Yes') ?>
+				</a> <small class="slash"> / </small> <a class="helpfullmenu"
+					href="<?php echo $this->getAcceptedNoUrl($_review->getReviewId(),$productId);?>"><?php echo $this->__('No') ?>
+				</a> 
+
+				<div class="responseMsg"></div>
+
+				<?php
+								}
+								else
+								{
+									echo $this->__('You have already voted this review!');
+								} // END IF FOR CHECKING WHETHER CUSTOMER VOTED OR NOT
+
+
+							}// END IF FOR CHECKING WHETHER CUSTOMER REVIEWED OR NOT
+						}// CHECKING WHETHER CUSTOMER EXIST OR NOT
+						?>
+
+				<!-- REDIRECT TO LOGIN PAGE -->
+
+						 <?php else:  echo $this->__('Was this review helpful ? ');?>
+                               <a href="<?php echo $this->__(Mage::helper('customer')->getLoginUrl());?>"><?php echo $this->__('Yes');?></a>
+                               <?php echo('/');?>
+                              <a href="<?php echo $this->__(Mage::helper('customer')->getLoginUrl());?>"><?php echo $this->__('No');?></a>
+
+
+						<?php endif; // END IF FOR CHECK WHETHER CUSTOMER LOGGED IN OR NOT
+
+						?>
+                              </span>
+
+			</div>
+		</div>
+		<!-- End of "reivew-container"  -->
+
+		<?php
+		endforeach; // END FOREACH FOR REVIEW ITERATION
+
+		// INCLUDE TOOL BAR
+		echo $this->getChildHtml('toolbar');
+		?>
+	</div>
+	<?php endif; // END IF FOR REVIEWS EXIST OR NOT ?>
+
+</div>
+<script type="text/javascript">
+
+$$('.helpfullmenu').invoke('observe','click',function(field) {	 
+	
+		field.preventDefault();
+		var $this = this;		 
+
+		new Ajax.Request(this.href, {
+		  method:'get',
+		  onSuccess: function(transport) {
+		    var response = transport.responseText || "no response text";
+		    response=JSON.parse(response);
+		    if(response.success == true){ 
+			   $this.up().update('<div class="success">'+response.message+'</div>');
+			}
+			if(response.error == true){
+				$this.up().update('<div class="error">'+response.message+'</div>');
+			}
+		 
+		  },
+		  onFailure: function() { 
+			
+					$this.up().update('<div class="error">Something went wrong...</div>'); }
+		 });	
+
+
+			
+		}); 
+
+</script>
+
+
+<!-- POPUP FORM FOR REPORT ABUSE -->
+
+<div id="popup_box">
+    <div class="shadow_grid">
+<div class="white-container">
+<form id="abuse-form" method="post" action="<?php echo $this->getUpdateReportabuseUrl();?>">
+<h4><?php echo $this->__('Report Abuse');?></h4>
+<span><?php echo $this->__('Why do you want to report this review?');?></span>
+<textarea id="txtMsg" name = "txtMsg" rows="5" cols="40"></textarea>
+<div id="error_message"></div>
+<input type="hidden" id="review_id" name="review_id" value=""/>
+<button type="button" title="<?php echo $this->__('Report Review'); ?>" class="button btn-cart" onclick="reportabuse();"><span><span><?php echo $this->__('Report Review');?></span></span></button>
+<a id="popupBoxClose"></a>
+</form>
+</div>
+        </div>    
+</div>
+
+  <script type="text/javascript">
+// POPUP FORM ACTION FOR REPORT ABUSE 
+
+function reportabuse()
+{
+  var s_message='<?php echo $this->__('Thanks for Reporting.'); ?>';
+  var f_message='<?php echo $this->__('Something went wrong'); ?>';
+  var m_message='<?php echo $this->__('* Should not be empty.'); ?>';
+    if($('txtMsg').value=='')
+    {
+       $('error_message').update(m_message);
+       return false;
+    }
+    reportdiv = "reportme"+$$('[id="review_id"]')[0].value;
+    successdiv ="success_"+$$('[id="review_id"]')[0].value;
+
+	$('popup_box').hide(); 
+	$(reportdiv).hide();  	             
+
+         
+	   $(successdiv).update(s_message);  
+ 
+ $('abuse-form').request({
+    	   
+  	onFailure: function() {$(successdiv).update(f_message);
+$(reportdiv).show();   
+    }
+	
+	         	    
+  	});
+
+        $('txtMsg').value=='';
+
+}
+</script> 
+
+
+<!-- POPUP BOX ACTION FOR REPORT ABUSE USING JQUERY -->
+ 
+<script type="text/javascript">
+
+	$j(document).ready( function() {
+	
+		// When site loaded, load the Popupbox First
+		$j('.reportme').click( function() {	
+			$j('#review_id').val(this.name);		
+			loadPopupBox();
+		});
+		
+		$j('#popupBoxClose').click( function() {			
+			unloadPopupBox();
+		});	
+
+		function unloadPopupBox() {	// TO Unload the Popupbox
+			$j('#popup_box').fadeOut("fast");
+		 
+		}	
+		
+		function loadPopupBox() {	// To Load the Popupbox
+			$j('#popup_box').fadeIn("fast");
+		 		
+		}
+	
+		
+	});
+</script>
+
+
+
+	<?php } // END IF FOR MODULE ENABLED OR NOT ?>
+	
+
